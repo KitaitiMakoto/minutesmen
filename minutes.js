@@ -90,6 +90,7 @@ function startRecognition(event) {
             result = results[i].item(0);
             if (result.confidence > 0.3) {
                 speechField.value = result.transcript;
+                postSpeech();
             }
         }
     };
