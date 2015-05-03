@@ -2,12 +2,7 @@ ol {
     margin-bottom: 2em;
 }
 form {
-    position: fixed;
-    height: 2em;
-    bottom: 0;
+    float: right;
     vertical-align: top;
-}
-form p {
-    float: left;
-    margin: 0;
+    border: thin black solid;
 }

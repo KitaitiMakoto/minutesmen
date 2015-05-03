@@ -1,11 +1,17 @@
 "use strict";
 
+this.SpeechRecognition = this.SpeechRecognition || this.webkitSpeechRecognition;
+if (! SpeechRecognition) {
+    alert("Speech Recognition API is not supported in your browser. Please inquire of browser vendor.\nYou can only see logs for now.");
+}
+
 document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     var ws = io();
     var logger = document.getElementById("log");
     var form = document.querySelector("form");
     var iconField = form.querySelector('[name="icon"]');
     var nameField = form.querySelector('[name="name"]');
+    var langField = form.querySelector('[name="lang"]');
     var messageField = form.querySelector('[name="speech"]');
     ws.on("connect", function() {
         form.onsubmit = function onsubmit(event) {
@@ -34,5 +40,70 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
                 ": " + message.speech;
             logger.appendChild(log);
         });
+        if (SpeechRecognition) {
+            var startButton = document.getElementById("start-button");
+            startButton.addEventListener("click", startRecognition);
+        }
     });
 });
+
+function startRecognition(event) {
+    var button = event.target;
+    button.removeEventListener("click", startRecognition);
+    var form = button.form;
+    var speechField = form.querySelector('[name="speech"]');
+    var lang = document.querySelector('[name="lang"]').value || "en";
+    var recognition = new SpeechRecognition();
+    recognition.lang = lang || "en";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onaudiostart = function onaudiostart(event) {
+        console.log(event.type, event);
+    };
+    recognition.onsoundstart = function onsoundstart(event) {
+        console.log(event.type, event);
+    };
+    recognition.onspeechstart = function onspeechstart(event) {
+        console.log(event.type, event);
+    };
+    recognition.onspeechend = function onspeechend(event) {
+        console.log(event.type, event);
+    };
+    recognition.onsoundend = function onsoundend(event) {
+        console.log(event.type, event);
+    };
+    recognition.onaudioend = function onaudioend(event) {
+        console.log(event.type, event);
+    };
+    recognition.onresult = function onresult(event) {
+        var results = event.results;
+        var i = event.resultIndex, l = results.length, result;
+        for (; i < l; i++) {
+            result = results[i].item(0);
+            console.log(result.confidence);
+            if (result.confidence > 0.3) {
+                speechField.value = result.transcript;
+            }
+        }
+    };
+    recognition.onnomatch = function onnomatch(event) {
+        console.log(event.type, event);
+    };
+    recognition.onerror = function onerror(event) {
+        console.log(event.type, event);
+    };
+    recognition.onstart = function onstart(event) {
+        console.log(event.type, event);
+    };
+    recognition.onend = function onend(event) {
+        console.log(event.type, event);
+    };
+
+    document.getElementById("stop-button").onclick = function stopRecognition() {
+        recognition.stop();
+        button.addEventListener("click", startRecognition);
+    };
+    recognition.start();
+}

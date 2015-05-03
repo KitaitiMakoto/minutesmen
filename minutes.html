@@ -2,12 +2,15 @@
 <title>Minutesmen</title>
 <h1>Minutesmen</h1>
 <link href="minutes.css" rel="stylesheet">
-<ol id="log"></ol>
 <form>
   <p><label>Icon: <input name="icon" type="file" accept="image/*"></label></p>
   <p><label>Name: <input name="name"></label></p>
+  <p><label>Language: <select name="lang"><option value="en">en</option><option value="ja">ja</option></select></label></p>
   <p><label>Speech(dev purpose): <input name="speech"></label></p>
   <p><input type="submit"></p>
+  <button id="start-button" type="button">Start</button>
+  <button id="stop-button" type="button">Stop</button>
 </form>
+<ol id="log"></ol>
 <script src="/socket.io/socket.io.js"></script>
 <script src="minutes.js"></script>
