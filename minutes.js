@@ -88,7 +88,6 @@ function startRecognition(event) {
         var i = event.resultIndex, l = results.length, result;
         for (; i < l; i++) {
             result = results[i].item(0);
-            console.log(result.confidence);
             if (result.confidence > 0.3) {
                 speechField.value = result.transcript;
             }
