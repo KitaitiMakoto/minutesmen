@@ -5,30 +5,19 @@ if (! SpeechRecognition) {
     alert("Speech Recognition API is not supported in your browser. Please inquire of browser vendor.\nYou can only see logs for now.");
 }
 
+var ws, logger, form, iconField, nameField, langField, messageField;
+
 document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
-    var ws = io();
-    var logger = document.getElementById("log");
-    var form = document.querySelector("form");
-    var iconField = form.querySelector('[name="icon"]');
-    var nameField = form.querySelector('[name="name"]');
-    var langField = form.querySelector('[name="lang"]');
-    var messageField = form.querySelector('[name="speech"]');
+    ws = io();
+    logger = document.getElementById("log");
+    form = document.querySelector("form");
+    iconField = form.querySelector('[name="icon"]');
+    nameField = form.querySelector('[name="name"]');
+    langField = form.querySelector('[name="lang"]');
+    messageField = form.querySelector('[name="speech"]');
     ws.on("connect", function() {
         form.onsubmit = function onsubmit(event) {
-            var data = {
-                name: nameField.value,
-                speech: messageField.value
-            };
-            ws.emit("speech", data, function onack(message) {
-                console.log("ack", message);
-                var log = document.createElement("li");
-                log.textContent = "[" +
-                    (new Date(Number(message.time))).toLocaleString() +
-                    "]" + message.name +
-                    ": " + message.speech;
-                logger.appendChild(log);
-            });
-            messageField.value = "";
+            postSpeech();
             event.preventDefault();
         };
         ws.on("speech", function onbroadcast(message) {
@@ -46,6 +35,23 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         }
     });
 });
+
+function postSpeech() {
+    var data = {
+        name: nameField.value,
+        speech: messageField.value
+    };
+    ws.emit("speech", data, function onack(message) {
+        console.log("ack", message);
+        var log = document.createElement("li");
+        log.textContent = "[" +
+            (new Date(Number(message.time))).toLocaleString() +
+            "]" + message.name +
+            ": " + message.speech;
+        logger.appendChild(log);
+    });
+    messageField.value = "";
+};
 
 function startRecognition(event) {
     var button = event.target;
