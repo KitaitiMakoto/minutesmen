@@ -36,6 +36,19 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     }
 });
 
+function createSpeechStream(ws) {
+    return new ReadableStream({
+        start: function startSpeechStream(controller) {
+            ws.on("speech", function onSpeech(message) {
+                controller.enqueue(message);
+            });
+        },
+        error: function errorSpeechStream() {
+            controller.error(new Error("Speech stream error"));
+        }
+    });
+}
+
 function postSpeech() {
     var data = {
         name: nameField.value,
