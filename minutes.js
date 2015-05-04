@@ -22,10 +22,11 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     nameField = form.querySelector('[name="name"]');
     langField = form.querySelector('[name="lang"]');
     messageField = form.querySelector('[name="speech"]');
-    form.onsubmit = function onsubmit(event) {
-        postSpeech();
-        event.preventDefault();
-    };
+
+    var formSubmitStream = createFormSubmitStream(form);
+    var speechPoster = createSpeechPoster();
+    formSubmitStream.pipeTo(speechPoster);
+
     if (SpeechRecognition) {
         var startButton = document.getElementById("start-button");
         startButton.addEventListener("click", startRecognition);
