@@ -2,7 +2,9 @@
 
 this.SpeechRecognition = this.SpeechRecognition || this.webkitSpeechRecognition;
 if (! SpeechRecognition) {
-    alert("Speech Recognition API is not supported in your browser. Please inquire of browser vendor.\nYou can only see logs for now.");
+    alert("Speech Recognition API is not supported in your browser. " +
+          "Please inquire of browser vendor.\n" +
+          "You can post message only by text input for now.");
 }
 
 var ws, logger, form, iconField, nameField, langField, messageField;
