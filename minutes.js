@@ -7,10 +7,10 @@ if (! SpeechRecognition) {
           "You can post message only by text input for now.");
 }
 
-var ws, logger, iconField, nameField, langField, messageField;
+var logger, iconField, nameField, langField, messageField;
 
 document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
-    ws = io();
+    var ws = io();
     var speechStreams = createSpeechStream(ws).tee();
     logger = document.getElementById("log");
     var logWriter = attachLogger(logger);
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     messageField = form.querySelector('[name="speech"]');
 
     var formSubmitStream = createFormSubmitStream(form);
-    var speechPoster = createSpeechPoster();
+    var speechPoster = createSpeechPoster(ws);
     formSubmitStream.pipeTo(speechPoster);
 
     if (SpeechRecognition) {
@@ -120,7 +120,7 @@ function createConsoleSpeechLogger() {
 
 // TODO: Extract ack part
 // TODO: Extract message field handle
-function createSpeechPoster() {
+function createSpeechPoster(ws) {
     return new WritableStream({
         write: function postSpeech(data) {
             ws.emit("speech", data, function onack(message) {
