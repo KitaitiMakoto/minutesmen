@@ -58,9 +58,8 @@ function postSpeech() {
 function startRecognition(event) {
     var button = event.target;
     button.removeEventListener("click", startRecognition);
-    var lang = document.querySelector('[name="lang"]').value || "en";
     var recognition = new SpeechRecognition();
-    recognition.lang = lang || "en";
+    recognition.lang = document.querySelector('[name="lang"]').value || "en";
     recognition.interimResults = true;
     recognition.continuous = true;
     recognition.maxAlternatives = 1;
