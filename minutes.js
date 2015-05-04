@@ -45,6 +45,21 @@ function createSpeechStream(ws) {
     });
 }
 
+function createFormSubmitStream(form) {
+    return new ReadableStream({
+        start: function submitSpeech(controller) {
+            form.addEventListener("submit", function submit(event) {
+                var data = {
+                    name: nameField.value,
+                    speech: messageField.value
+                };
+                controller.enqueue(data);
+                event.preventDefault();
+            });
+        }
+    });
+}
+
 function attachLogger(loggerElem) {
     return new WritableStream({
         write: function log(message) {
