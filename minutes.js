@@ -58,8 +58,6 @@ function postSpeech() {
 function startRecognition(event) {
     var button = event.target;
     button.removeEventListener("click", startRecognition);
-    var form = button.form;
-    var speechField = form.querySelector('[name="speech"]');
     var lang = document.querySelector('[name="lang"]').value || "en";
     var recognition = new SpeechRecognition();
     recognition.lang = lang || "en";
@@ -91,7 +89,7 @@ function startRecognition(event) {
         for (; i < l; i++) {
             result = results[i].item(0);
             if (result.confidence > 0.3) {
-                speechField.value = result.transcript;
+                messageField.value = result.transcript;
                 postSpeech();
             }
         }
