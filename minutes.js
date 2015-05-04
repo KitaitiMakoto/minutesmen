@@ -39,10 +39,9 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         document.getElementById("stop-button").onclick = function stopRecognition() {
             recognition.stop();
         };
-        var startButton = document.getElementById("start-button");
-        startButton.addEventListener("click", function() {
+        document.getElementById("start-button").onclick = function startRecognition() {
             recognition.start();
-        });
+        };
     }
 });
 
