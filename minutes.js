@@ -81,6 +81,25 @@ function createConsoleSpeechLogger() {
     });
 }
 
+// TODO: Extract ack part
+// TODO: Extract message field handle
+function createSpeechPoster() {
+    return new WritableStream({
+        write: function postSpeech(data) {
+            ws.emit("speech", data, function onack(message) {
+                console.log("ack", message);
+                var log = document.createElement("li");
+                log.textContent = "[" +
+                    (new Date(Number(message.time))).toLocaleString() +
+                    "]" + message.name +
+                    ": " + message.speech;
+                logger.appendChild(log);
+            });
+            messageField.value = "";
+        }
+    });
+}
+
 function postSpeech() {
     var data = {
         name: nameField.value,
