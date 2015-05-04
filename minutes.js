@@ -59,6 +59,14 @@ function attachLogger(loggerElem) {
     });
 }
 
+function createConsoleSpeechLogger() {
+    return new WritableStream({
+        write: function logSpeech(message) {
+            console.log("speech", message);
+        }
+    });
+}
+
 function postSpeech() {
     var data = {
         name: nameField.value,
