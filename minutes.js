@@ -7,7 +7,7 @@ if (! SpeechRecognition) {
           "You can post message only by text input for now.");
 }
 
-var ws, logger, form, iconField, nameField, langField, messageField;
+var ws, logger, iconField, nameField, langField, messageField;
 
 document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     ws = io();
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     var consoleSpeechLogger = createConsoleSpeechLogger();
     speechStreams[0].pipeTo(logWriter);
     speechStreams[1].pipeTo(consoleSpeechLogger);
-    form = document.querySelector("form");
+    var form = document.querySelector("form");
     iconField = form.querySelector('[name="icon"]');
     nameField = form.querySelector('[name="name"]');
     langField = form.querySelector('[name="lang"]');
