@@ -49,6 +49,19 @@ function createSpeechStream(ws) {
     });
 }
 
+function attachLogger(loggerElem) {
+    return new WritableStream({
+        write: function log(message) {
+            var li = document.createElement("li");
+            li.textContent = "[" +
+                (new Date(Number(message.time))).toLocaleString() +
+                "]" + message.name +
+                ": " + message.speech;
+            loggerElem.appendChild(li);
+        }
+    });
+}
+
 function postSpeech() {
     var data = {
         name: nameField.value,
