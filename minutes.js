@@ -11,7 +11,10 @@ var ws, logger, form, iconField, nameField, langField, messageField;
 
 document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     ws = io();
+    var speechStream = createSpeechStream(ws);
     logger = document.getElementById("log");
+    var logWriter = attachLogger(logger);
+    speechStream.pipeTo(logWriter);
     form = document.querySelector("form");
     iconField = form.querySelector('[name="icon"]');
     nameField = form.querySelector('[name="name"]');
@@ -23,12 +26,6 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     };
     ws.on("speech", function onbroadcast(message) {
         console.log("broadcast", message);
-        var log = document.createElement("li");
-        log.textContent = "[" +
-            (new Date(Number(message.time))).toLocaleString() +
-            "]" + message.name +
-            ": " + message.speech;
-        logger.appendChild(log);
     });
     if (SpeechRecognition) {
         var startButton = document.getElementById("start-button");
