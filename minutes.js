@@ -61,6 +61,30 @@ function createFormSubmitStream(form) {
     });
 }
 
+function createSpeechRecognitionStream(recognition) {
+    return new ReadableStream({
+        start: function startSpeechRecognition(controller) {
+            recognition.onresult = function postSpeech(event) {
+                var results = event.results;
+                var i = event.resultIndex, l = results.length, result;
+                for (; i < l; i++) {
+                    result = results[i].item(0);
+                    if (result.confidence > 0.3) {
+                        var data = {
+                            name: nameField.value,
+                            speech: result.transcript
+                        }
+                        controller.enqueue(data);
+                    }
+                }
+            };
+        },
+        cancel: function cancelSpeechRecognition(reason) {
+            recognition.stop();
+        }
+    });
+}
+
 function attachLogger(loggerElem) {
     return new WritableStream({
         write: function log(message) {
