@@ -137,20 +137,3 @@ function createSpeechPoster() {
         }
     });
 }
-
-function postSpeech() {
-    var data = {
-        name: nameField.value,
-        speech: messageField.value
-    };
-    ws.emit("speech", data, function onack(message) {
-        console.log("ack", message);
-        var log = document.createElement("li");
-        log.textContent = "[" +
-            (new Date(Number(message.time))).toLocaleString() +
-            "]" + message.name +
-            ": " + message.speech;
-        logger.appendChild(log);
-    });
-    messageField.value = "";
-};
