@@ -1,4 +1,5 @@
 {
+  "private": true,
   "dependencies": {
     "express": "^4.12.3",
     "influx": "^3.3.0",
