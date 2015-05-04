@@ -1,6 +1,8 @@
 {
   "private": true,
   "scripts": {
+    "start": "npm run server",
+    "server": "node server.js",
     "build": "browserify -t babelify streams.src.js > streams.js"
   },
   "dependencies": {
