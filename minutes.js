@@ -28,8 +28,21 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     formSubmitStream.pipeTo(speechPoster);
 
     if (SpeechRecognition) {
+        var recognition = new SpeechRecognition();
+        recognition.lang = document.querySelector('[name="lang"]').value || "en";
+        recognition.interimResults = true;
+        recognition.continuous = true;
+        recognition.maxAlternatives = 1;
+
+        var speechRecognitionStream = createSpeechRecognitionStream(recognition);
+        speechRecognitionStream.pipeTo(speechPoster);
+        document.getElementById("stop-button").onclick = function stopRecognition() {
+            recognition.stop();
+        };
         var startButton = document.getElementById("start-button");
-        startButton.addEventListener("click", startRecognition);
+        startButton.addEventListener("click", function() {
+            recognition.start();
+        });
     }
 });
 
