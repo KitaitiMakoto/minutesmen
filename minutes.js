@@ -30,6 +30,10 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
             ": " + message.speech;
         logger.appendChild(log);
     });
+    if (SpeechRecognition) {
+        var startButton = document.getElementById("start-button");
+        startButton.addEventListener("click", startRecognition);
+    }
 });
 
 function postSpeech() {
