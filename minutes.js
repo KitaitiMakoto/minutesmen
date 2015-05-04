@@ -17,24 +17,18 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     nameField = form.querySelector('[name="name"]');
     langField = form.querySelector('[name="lang"]');
     messageField = form.querySelector('[name="speech"]');
-    ws.on("connect", function() {
-        form.onsubmit = function onsubmit(event) {
-            postSpeech();
-            event.preventDefault();
-        };
-        ws.on("speech", function onbroadcast(message) {
-            console.log("broadcast", message);
-            var log = document.createElement("li");
-            log.textContent = "[" +
-                (new Date(Number(message.time))).toLocaleString() +
-                "]" + message.name +
-                ": " + message.speech;
-            logger.appendChild(log);
-        });
-        if (SpeechRecognition) {
-            var startButton = document.getElementById("start-button");
-            startButton.addEventListener("click", startRecognition);
-        }
+    form.onsubmit = function onsubmit(event) {
+        postSpeech();
+        event.preventDefault();
+    };
+    ws.on("speech", function onbroadcast(message) {
+        console.log("broadcast", message);
+        var log = document.createElement("li");
+        log.textContent = "[" +
+            (new Date(Number(message.time))).toLocaleString() +
+            "]" + message.name +
+            ": " + message.speech;
+        logger.appendChild(log);
     });
 });
 
