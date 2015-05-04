@@ -36,11 +36,11 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
 
         var speechRecognitionStream = createSpeechRecognitionStream(recognition);
         speechRecognitionStream.pipeTo(speechPoster);
-        document.getElementById("stop-button").onclick = function stopRecognition() {
-            recognition.stop();
-        };
         document.getElementById("start-button").onclick = function startRecognition() {
             recognition.start();
+        };
+        document.getElementById("stop-button").onclick = function stopRecognition() {
+            recognition.stop();
         };
     }
 });
