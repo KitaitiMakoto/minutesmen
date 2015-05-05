@@ -17,6 +17,18 @@ db.getSeriesNames("minutesmen", function(error, seriesNames) {
     }
 });
 
+function getRecentLogs() {
+    return new Promise(function(resolve, reject) {
+        db.query("select * from speech limit 12", function sendLogs(error, logs) {
+            if (error) {
+                reject(new Error(error));
+            } else {
+                resolve(logs);
+            }
+        });
+    });
+}
+
 app.use(express.static("."));
 
 app.use("/peers", peer(http));
@@ -26,13 +38,11 @@ app.get("/", function(req, res) {
 });
 
 app.get("/logs", function(req, res) {
-    db.query("select * from speech limit 12", function sendLogs(error, logs) {
-        if (error) {
-            console.error("[ERROR]/logs: " + error);
-            res.status(500).end();
-            return;
-        }
+    getRecentLogs().then(function(logs) {
         res.send(logs);
+    }).catch(function() {
+        console.error("[ERROR]/logs: " + error);
+        res.status(500).end();
     });
 });
 
