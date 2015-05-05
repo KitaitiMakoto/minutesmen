@@ -10,8 +10,7 @@ if (! SpeechRecognition) {
 
 document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     var ws = io();
-    var peer;
-    peer = new Peer(null, {
+    var peer = new Peer(null, {
         debug: 3,
         host: location.hostname,
         port: location.port,
