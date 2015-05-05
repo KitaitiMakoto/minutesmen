@@ -160,11 +160,12 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
                     var results = event.results;
                     var i = event.resultIndex, l = results.length, result;
                     for (; i < l; i++) {
-                        result = results[i].item(0);
-                        if (result.confidence > 0.3) {
+                        result = results[i];
+                        var alt = result.item(0);
+                        if (result.isFinal && alt.confidence > 0.3) {
                             var data = {
                                 name: nameField.value,
-                                speech: result.transcript
+                                speech: alt.transcript
                             }
                             controller.enqueue(data);
                         }
