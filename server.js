@@ -1,7 +1,11 @@
 var express = require("express");
 var app = express();
-var http = require("http").Server(app);
-var io = require("socket.io")(http);
+var fs = require("fs");
+var https = require("https").createServer({
+    key: fs.readFileSync("key.pem"),
+    cert: fs.readFileSync("cert.pem")
+}, app);
+var io = require("socket.io")(https);
 var db = require("influx")({
     host: "localhost",
     port: 8086,
@@ -31,7 +35,7 @@ function getRecentLogs() {
 
 app.use(express.static("."));
 
-app.use("/peers", peer(http));
+app.use("/peers", peer(https));
 
 app.get("/", function(req, res) {
     res.sendFile(__dirname + "/minutes.html");
@@ -66,6 +70,6 @@ io.on("connection", function(user) {
     });
 });
 
-http.listen(3000, function() {
+https.listen(3000, function() {
     console.log("linstening on *:3000");
 });
