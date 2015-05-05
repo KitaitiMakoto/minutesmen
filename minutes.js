@@ -69,12 +69,31 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
 
         var speechRecognitionStream = createSpeechRecognitionStream(recognition);
         speechRecognitionStream.pipeTo(speechPoster);
+        var intervalId, listening;
         document.getElementById("start-button").onclick = function startRecognition() {
             recognition.lang = langField.value || "en";
             recognition.start();
+            listening = true;
+            // TODO: Wait for use of michrophone granted
+            if (location.protocol === "https:") {
+                recognition.onend = function() {
+                    recognition.start();
+                    listening = true;
+                }
+                intervalId = setInterval(function() {
+                    recognition.stop();
+                    listening = false;
+                }, 3000);
+            }
         };
         document.getElementById("stop-button").onclick = function stopRecognition() {
-            recognition.stop();
+            recognition.onend = null;
+            if (listening) {
+                recognition.stop();
+            }
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
         };
     }
 
