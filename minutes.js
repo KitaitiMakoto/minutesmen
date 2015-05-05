@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     var form = document.querySelector("form");
     iconField = form.querySelector('[name="icon"]');
     nameField = form.querySelector('[name="name"]');
-    langField = form.querySelector('[name="lang"]');
+    langField = document.querySelector('[name="lang"]');
     messageField = form.querySelector('[name="speech"]');
 
     getLogs().then(function appendInitialLogs(logs) {
