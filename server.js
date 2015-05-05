@@ -19,7 +19,7 @@ db.getSeriesNames("minutesmen", function(error, seriesNames) {
 
 function getRecentLogs() {
     return new Promise(function(resolve, reject) {
-        db.query("select * from speech limit 12", function sendLogs(error, logs) {
+        db.query("select time, name, speech from speech limit 12", function sendLogs(error, logs) {
             if (error) {
                 reject(new Error(error));
             } else {
