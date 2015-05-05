@@ -10,6 +10,12 @@ var db = require("influx")({
     password: "who watches the watchmen?"
 });
 
+db.getSeriesNames("minutesmen", function(error, seriesNames) {
+    if (error) {
+        console.warn("[WARN]InfluxDB seems not running");
+    }
+});
+
 app.use(express.static("."));
 
 app.get("/", function(req, res) {
