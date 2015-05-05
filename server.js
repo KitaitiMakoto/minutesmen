@@ -22,6 +22,17 @@ app.get("/", function(req, res) {
     res.sendFile(__dirname + "/minutes.html");
 });
 
+app.get("/logs", function(req, res) {
+    db.query("select * from speech limit 12", function sendLogs(error, logs) {
+        if (error) {
+            console.error("[ERROR]/logs: " + error);
+            res.status(500).end();
+            return;
+        }
+        res.send(logs);
+    });
+});
+
 io.on("connection", function(user) {
     var connectionId = user.id;
     console.log("a user connected");
