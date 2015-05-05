@@ -182,12 +182,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
             write: function postSpeech(data) {
                 ws.emit("speech", data, function onack(message) {
                     console.log("ack", message);
-                    var log = document.createElement("li");
-                    log.textContent = "[" +
-                        (new Date(Number(message.time))).toLocaleString() +
-                        "]" + message.name +
-                        ": " + message.speech;
-                    logger.appendChild(log);
+                    logSpeech(message);
                 });
                 messageField.value = "";
             }
