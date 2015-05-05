@@ -46,15 +46,12 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         var nameCol = logs.columns.indexOf("name");
         var speechCol = logs.columns.indexOf("speech");
         logs.points.reverse().forEach(function appendLog(log) {
-            var time = log[timeCol];
-            var name = log[nameCol];
-            var speech = log[speechCol];
-            var li = document.createElement("li");
-            li.textContent = "[" +
-                (new Date(Number(time))).toLocaleString() +
-                "]" + name +
-                ": " + speech;
-            logger.appendChild(li);
+            var message = {
+                time: log[timeCol],
+                name: log[nameCol],
+                speech: log[speechCol]
+            };
+            logSpeech(message);
         });
     }).catch(function onerror(error) {
         console.error(error);
