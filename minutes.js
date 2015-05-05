@@ -23,6 +23,26 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     langField = form.querySelector('[name="lang"]');
     messageField = form.querySelector('[name="speech"]');
 
+    getLogs().then(function appendInitialLogs(logs) {
+        var logs = logs[0];
+        var timeCol = logs.columns.indexOf("time");
+        var nameCol = logs.columns.indexOf("name");
+        var speechCol = logs.columns.indexOf("speech");
+        logs.points.reverse().forEach(function appendLog(log) {
+            var time = log[timeCol];
+            var name = log[nameCol];
+            var speech = log[speechCol];
+            var li = document.createElement("li");
+            li.textContent = "[" +
+                (new Date(Number(time))).toLocaleString() +
+                "]" + name +
+                ": " + speech;
+            logger.appendChild(li);
+        });
+    }).catch(function onerror(error) {
+        console.error(error);
+    });
+
     var formSubmitStream = createFormSubmitStream(form);
     var speechPoster = createSpeechPoster(ws);
     formSubmitStream.pipeTo(speechPoster);
@@ -44,6 +64,25 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         };
     }
 });
+
+function getLogs() {
+    return new Promise(function getLogs(resolve, reject) {
+        var request = new XMLHttpRequest();
+        request.open("GET", "/logs");
+        request.setRequestHeader("accept", "application/json");
+        request.onload = function onload() {
+            if (this.status === 200) {
+                resolve(JSON.parse(this.responseText));
+            } else {
+                reject(new Error(request.statusText));
+            }
+        };
+        request.onerror = function onerror() {
+            reject(new Error(request.statusText));
+        };
+        request.send();
+    });
+}
 
 function createSpeechStream(ws) {
     return new ReadableStream({
