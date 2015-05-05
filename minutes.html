@@ -6,12 +6,14 @@
   <form>
     <p><label>Icon: <input name="icon" type="file" accept="image/*"></label></p>
     <p><label>Name: <input name="name"></label></p>
-    <p><label>Language: <select name="lang"><option value="en">en</option><option value="ja">ja</option></select></label></p>
     <p><label>Speech(dev purpose): <input name="speech"></label></p>
     <p><input type="submit"></p>
+  </form>
+  <div id="recognition">
+    <p><label>Language: <select name="lang"><option value="en">en</option><option value="ja">ja</option></select></label></p>
     <button id="start-button" type="button">Start</button>
     <button id="stop-button" type="button">Stop</button>
-  </form>
+  </div>
 </div>
 <ol id="log"></ol>
 <script src="streams.js"></script>

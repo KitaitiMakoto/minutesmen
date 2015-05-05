@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         idField.value = id;
         idLabel.appendChild(idField);
         p.appendChild(idLabel);
-        form.appendChild(p);
+        document.getElementById("recognition").appendChild(p);
     });
     var logger, iconField, nameField, langField, messageField;
     var speechStreams = createSpeechStream(ws).tee();
