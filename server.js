@@ -9,6 +9,7 @@ var db = require("influx")({
     username: "minutesmen",
     password: "who watches the watchmen?"
 });
+var peer = require("peer").ExpressPeerServer;
 
 db.getSeriesNames("minutesmen", function(error, seriesNames) {
     if (error) {
@@ -17,6 +18,8 @@ db.getSeriesNames("minutesmen", function(error, seriesNames) {
 });
 
 app.use(express.static("."));
+
+app.use("/peers", peer(http));
 
 app.get("/", function(req, res) {
     res.sendFile(__dirname + "/minutes.html");
