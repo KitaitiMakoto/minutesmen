@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
 
     if (SpeechRecognition) {
         var recognition = new SpeechRecognition();
-        recognition.lang = document.querySelector('[name="lang"]').value || "en";
+        recognition.lang = langField.value || "en";
         recognition.interimResults = true;
         recognition.continuous = true;
         recognition.maxAlternatives = 1;
