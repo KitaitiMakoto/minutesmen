@@ -38,9 +38,9 @@ app.get("/logs", function(req, res) {
 
 io.on("connection", function(user) {
     var connectionId = user.id;
-    console.log("a user connected");
+    console.log("a user " + connectionId + " connected");
     user.on("disconnect", function() {
-        console.log("user disconnected");
+        console.log("user " + connectionId + " disconnected");
     });
     user.on("speech", function(message, ack) {
         message.connection_id = connectionId;
@@ -48,7 +48,7 @@ io.on("connection", function(user) {
         console.log(message);
         db.writePoint("speech", message, function(error, data) {
             if (error) {
-                console.error(error);
+                console.error(connectionId, error);
             }
         });
         user.broadcast.emit("speech", message);
