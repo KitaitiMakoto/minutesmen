@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     var logger, iconField, nameField, langField, messageField;
     var speechStreams = createSpeechStream(ws).tee();
     logger = document.getElementById("log");
-    var logWriter = attachLogger();
+    var logWriter = createSpeechLogger();
     var consoleSpeechLogger = createConsoleSpeechLogger();
     speechStreams[0].pipeTo(logWriter);
     speechStreams[1].pipeTo(consoleSpeechLogger);
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         });
     }
 
-    function attachLogger() {
+    function createSpeechLogger() {
         return new WritableStream({
             write: logSpeech
         });
