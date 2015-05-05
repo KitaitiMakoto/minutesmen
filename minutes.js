@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     var logger, iconField, nameField, langField, messageField;
     var speechStreams = createSpeechStream(ws).tee();
     logger = document.getElementById("log");
-    var logWriter = attachLogger(logger);
+    var logWriter = attachLogger();
     var consoleSpeechLogger = createConsoleSpeechLogger();
     speechStreams[0].pipeTo(logWriter);
     speechStreams[1].pipeTo(consoleSpeechLogger);
@@ -79,6 +79,15 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         document.getElementById("stop-button").onclick = function stopRecognition() {
             recognition.stop();
         };
+    }
+
+    function logSpeech(message) {
+        var li = document.createElement("li");
+        li.textContent = "[" +
+            (new Date(Number(message.time))).toLocaleString() +
+            "]" + message.name +
+            ": " + message.speech;
+        logger.appendChild(li);
     }
 
     function getLogs() {
@@ -152,16 +161,9 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         });
     }
 
-    function attachLogger(loggerElem) {
+    function attachLogger() {
         return new WritableStream({
-            write: function log(message) {
-                var li = document.createElement("li");
-                li.textContent = "[" +
-                    (new Date(Number(message.time))).toLocaleString() +
-                    "]" + message.name +
-                    ": " + message.speech;
-                loggerElem.appendChild(li);
-            }
+            write: logSpeech
         });
     }
 
