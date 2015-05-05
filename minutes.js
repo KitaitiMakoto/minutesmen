@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
 
     if (SpeechRecognition) {
         var recognition = new SpeechRecognition();
-        recognition.lang = langField.value || "en";
         recognition.interimResults = true;
         recognition.continuous = true;
         recognition.maxAlternatives = 1;
@@ -57,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         var speechRecognitionStream = createSpeechRecognitionStream(recognition);
         speechRecognitionStream.pipeTo(speechPoster);
         document.getElementById("start-button").onclick = function startRecognition() {
+            recognition.lang = langField.value || "en";
             recognition.start();
         };
         document.getElementById("stop-button").onclick = function stopRecognition() {
