@@ -7,7 +7,11 @@ if (! SpeechRecognition) {
           "You can post message only by text input for now.");
 }
 
-Promise.all([DOMContentLoaded(document), initWebSocket(), initPeer()]).then(function(docAndWsAndPeerId) {
+Promise.all([
+    DOMContentLoaded(document),
+    initWebSocket(),
+    initPeer()
+]).then(function(docAndWsAndPeerId) {
     var ws = docAndWsAndPeerId[1];
     var peerId = docAndWsAndPeerId[2];
     var logger, iconField, nameField, langField, messageField;
