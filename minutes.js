@@ -11,9 +11,9 @@ Promise.all([
     DOMContentLoaded(document),
     initWebSocket(),
     initPeer()
-]).then(function(docAndWsAndPeerId) {
-    var ws = docAndWsAndPeerId[1];
-    var peerId = docAndWsAndPeerId[2];
+]).then(function(initialized) {
+    var ws = initialized[1];
+    var peerId = initialized[2];
     var logger, iconField, nameField, langField, messageField;
     var speechStreams = createSpeechStream(ws).tee();
     logger = document.getElementById("log");
