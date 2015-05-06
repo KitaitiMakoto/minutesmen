@@ -217,7 +217,6 @@ function DOMContentLoaded(doc) {
             return;
         }
         function resolveLoaded(event) {
-            console.log(event);
             resolve(doc);
             event.target.removeEventListener(event.type, resolveLoaded);
         };
