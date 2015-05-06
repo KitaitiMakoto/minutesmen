@@ -7,9 +7,8 @@ if (! SpeechRecognition) {
           "You can post message only by text input for now.");
 }
 
-
-document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
-    var ws = io();
+Promise.all([DOMContentLoaded(document), initWebSocket()]).then(function(docAndWs) {
+    var ws = docAndWs[1];
     var peer = new Peer(null, {
         debug: 3,
         host: location.hostname,
@@ -207,3 +206,30 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         }});
     }
 });
+
+function DOMContentLoaded(doc) {
+    return new Promise(function(resolve, reject) {
+        if (doc.readyState !== "loading") {
+            resolve(doc);
+            return;
+        }
+        function resolveLoaded(event) {
+            console.log(event);
+            resolve(doc);
+            event.target.removeEventListener(event.type, resolveLoaded);
+        };
+        doc.addEventListener("DOMContentLoaded", resolveLoaded);
+    });
+}
+
+function initWebSocket() {
+    return new Promise(function(resolve, reject) {
+        var ws = io();
+        ws.on("connect", function() {
+            resolve(ws);
+        });
+        ws.on("connect_error", function(error) {
+            reject(error);
+        });
+    });
+}
