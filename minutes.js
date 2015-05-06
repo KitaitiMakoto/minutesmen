@@ -12,7 +12,7 @@ Promise.all([
     initWebSocket(),
     initPeer(),
     getLogs()
-]).then(function(initialized) {
+]).then(function main(initialized) {
     var ws = initialized[1];
     var peerId = initialized[2];
     var initialLogs = initialized[3];
