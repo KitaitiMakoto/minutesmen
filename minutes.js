@@ -205,6 +205,9 @@ Promise.all([DOMContentLoaded(document), initWebSocket()]).then(function(docAndW
             messageField.value = "";
         }});
     }
+}).catch(function(error) {
+    console.error(error);
+    alert(error);
 });
 
 function DOMContentLoaded(doc) {
