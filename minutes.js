@@ -7,25 +7,9 @@ if (! SpeechRecognition) {
           "You can post message only by text input for now.");
 }
 
-Promise.all([DOMContentLoaded(document), initWebSocket()]).then(function(docAndWs) {
-    var ws = docAndWs[1];
-    var peer = new Peer(null, {
-        debug: 3,
-        host: location.hostname,
-        port: location.port,
-        path: "/peers"
-    });
-    peer.on("open", function peerReady(id) {
-        var p = document.createElement("p");
-        var idLabel = document.createElement("label");
-        idLabel.textContent = "Peer ID: ";
-        var idField = document.createElement("input");
-        idField.readOnly = true;
-        idField.value = id;
-        idLabel.appendChild(idField);
-        p.appendChild(idLabel);
-        document.getElementById("recognition").appendChild(p);
-    });
+Promise.all([DOMContentLoaded(document), initWebSocket(), initPeer()]).then(function(docAndWsAndPeerId) {
+    var ws = docAndWsAndPeerId[1];
+    var peerId = docAndWsAndPeerId[2];
     var logger, iconField, nameField, langField, messageField;
     var speechStreams = createSpeechStream(ws).tee();
     logger = document.getElementById("log");
@@ -231,6 +215,32 @@ function initWebSocket() {
             resolve(ws);
         });
         ws.on("connect_error", function(error) {
+            reject(error);
+        });
+    });
+}
+
+function initPeer() {
+    return new Promise(function(resolve, reject) {
+        var peer = new Peer(null, {
+            debug: 3,
+            host: location.hostname,
+            port: location.port,
+            path: "/peers"
+        });
+        peer.on("open", function peerReady(id) {
+            resolve(id);
+            var p = document.createElement("p");
+            var idLabel = document.createElement("label");
+            idLabel.textContent = "Peer ID: ";
+            var idField = document.createElement("input");
+            idField.readOnly = true;
+            idField.value = id;
+            idLabel.appendChild(idField);
+            p.appendChild(idLabel);
+            document.getElementById("recognition").appendChild(p);
+        });
+        peer.on("error", function onPeerError(error) {
             reject(error);
         });
     });
