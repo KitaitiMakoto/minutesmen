@@ -10,10 +10,13 @@ if (! SpeechRecognition) {
 Promise.all([
     DOMContentLoaded(document),
     initWebSocket(),
-    initPeer()
+    initPeer(),
+    getLogs()
 ]).then(function(initialized) {
     var ws = initialized[1];
     var peerId = initialized[2];
+    var initialLogs = initialized[3];
+
     var logger, iconField, nameField, langField, messageField;
     var speechStreams = createSpeechStream(ws).tee();
     logger = document.getElementById("log");
@@ -27,21 +30,17 @@ Promise.all([
     langField = document.querySelector('[name="lang"]');
     messageField = form.querySelector('[name="speech"]');
 
-    getLogs().then(function appendInitialLogs(logs) {
-        var logs = logs[0];
-        var timeCol = logs.columns.indexOf("time");
-        var nameCol = logs.columns.indexOf("name");
-        var speechCol = logs.columns.indexOf("speech");
-        logs.points.reverse().forEach(function appendLog(log) {
-            var message = {
-                time: log[timeCol],
-                name: log[nameCol],
-                speech: log[speechCol]
-            };
-            logSpeech(message);
-        });
-    }).catch(function onerror(error) {
-        console.error(error);
+    var logs = initialLogs[0];
+    var timeCol = logs.columns.indexOf("time");
+    var nameCol = logs.columns.indexOf("name");
+    var speechCol = logs.columns.indexOf("speech");
+    logs.points.reverse().forEach(function appendLog(log) {
+        var message = {
+            time: log[timeCol],
+            name: log[nameCol],
+            speech: log[speechCol]
+        };
+        logSpeech(message);
     });
 
     var formSubmitStream = createFormSubmitStream(form);
@@ -94,25 +93,6 @@ Promise.all([
             "]" + message.name +
             ": " + message.speech;
         logger.appendChild(li);
-    }
-
-    function getLogs() {
-        return new Promise(function getLogs(resolve, reject) {
-            var request = new XMLHttpRequest();
-            request.open("GET", "/logs");
-            request.setRequestHeader("accept", "application/json");
-            request.onload = function onload() {
-                if (this.status === 200) {
-                    resolve(JSON.parse(this.responseText));
-                } else {
-                    reject(new Error(request.statusText));
-                }
-            };
-            request.onerror = function onerror() {
-                reject(new Error(request.statusText));
-            };
-            request.send();
-        });
     }
 
     function createSpeechStream(ws) {
@@ -247,5 +227,24 @@ function initPeer() {
         peer.on("error", function onPeerError(error) {
             reject(error);
         });
+    });
+}
+
+function getLogs() {
+    return new Promise(function getLogs(resolve, reject) {
+        var request = new XMLHttpRequest();
+        request.open("GET", "/logs");
+        request.setRequestHeader("accept", "application/json");
+        request.onload = function onload() {
+            if (this.status === 200) {
+                resolve(JSON.parse(this.responseText));
+            } else {
+                reject(new Error(request.statusText));
+            }
+        };
+        request.onerror = function onerror() {
+            reject(new Error(request.statusText));
+        };
+        request.send();
     });
 }
