@@ -195,7 +195,6 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         });
     }
 
-    // TODO: Extract ack part
     // TODO: Extract message field handle
     function createSpeechPoster(ws) {
         return new TransformStream({transform: function(data, enqueue, done) {
