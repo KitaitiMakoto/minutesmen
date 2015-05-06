@@ -58,8 +58,9 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     });
 
     var formSubmitStream = createFormSubmitStream(form);
-    var speechPoster = createSpeechPoster(ws);
-    formSubmitStream.pipeTo(speechPoster);
+    formSubmitStream
+        .pipeThrough(createSpeechPoster(ws))
+        .pipeTo(logWriter);
 
     if (SpeechRecognition) {
         var recognition = new SpeechRecognition();
@@ -68,7 +69,9 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
         recognition.maxAlternatives = 1;
 
         var speechRecognitionStream = createSpeechRecognitionStream(recognition);
-        speechRecognitionStream.pipeTo(speechPoster);
+        speechRecognitionStream
+            .pipeThrough(createSpeechPoster(ws))
+            .pipeTo(logWriter);
         var intervalId, listening;
         document.getElementById("start-button").onclick = function startRecognition() {
             recognition.lang = langField.value || "en";
@@ -195,14 +198,13 @@ document.addEventListener("DOMContentLoaded", function DOMContentLoaded() {
     // TODO: Extract ack part
     // TODO: Extract message field handle
     function createSpeechPoster(ws) {
-        return new WritableStream({
-            write: function postSpeech(data) {
-                ws.emit("speech", data, function onack(message) {
-                    console.log("ack", message);
-                    logSpeech(message);
-                });
-                messageField.value = "";
-            }
-        });
+        return new TransformStream({transform: function(data, enqueue, done) {
+            ws.emit("speech", data, function onack(message) {
+                console.log("ack", message);
+                enqueue(message);
+                done();
+            });
+            messageField.value = "";
+        }});
     }
 });
