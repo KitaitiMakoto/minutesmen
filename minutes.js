@@ -84,15 +84,7 @@ Promise.all([
     }
 
     function displayPeerId(id) {
-        var p = document.createElement("p");
-        var idLabel = document.createElement("label");
-        idLabel.textContent = "Peer ID: ";
-        var idField = document.createElement("input");
-        idField.readOnly = true;
-        idField.value = peerId;
-        idLabel.appendChild(idField);
-        p.appendChild(idLabel);
-        document.getElementById("recognition").appendChild(p);
+        document.getElementById("peer-id").value = id;
     }
 
     function logSpeech(message) {
