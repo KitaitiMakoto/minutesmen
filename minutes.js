@@ -17,15 +17,7 @@ Promise.all([
     var peerId = initialized[2];
     var initialLogs = initialized[3];
 
-    var p = document.createElement("p");
-    var idLabel = document.createElement("label");
-    idLabel.textContent = "Peer ID: ";
-    var idField = document.createElement("input");
-    idField.readOnly = true;
-    idField.value = peerId;
-    idLabel.appendChild(idField);
-    p.appendChild(idLabel);
-    document.getElementById("recognition").appendChild(p);
+    displayPeerId(peerId);
 
     var logger, iconField, nameField, langField, messageField;
     var speechStreams = createSpeechStream(ws).tee();
@@ -85,6 +77,18 @@ Promise.all([
                 clearInterval(intervalId);
             }
         };
+    }
+
+    function displayPeerId(id) {
+        var p = document.createElement("p");
+        var idLabel = document.createElement("label");
+        idLabel.textContent = "Peer ID: ";
+        var idField = document.createElement("input");
+        idField.readOnly = true;
+        idField.value = peerId;
+        idLabel.appendChild(idField);
+        p.appendChild(idLabel);
+        document.getElementById("recognition").appendChild(p);
     }
 
     function logSpeech(message) {
