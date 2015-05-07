@@ -30,17 +30,8 @@ Promise.all([
     langField = document.querySelector('[name="lang"]');
     messageField = form.querySelector('[name="speech"]');
 
-    var logs = initialLogs[0];
-    var timeCol = logs.columns.indexOf("time");
-    var nameCol = logs.columns.indexOf("name");
-    var speechCol = logs.columns.indexOf("speech");
-    logs.points.reverse().forEach(function appendLog(log) {
-        var message = {
-            time: log[timeCol],
-            name: log[nameCol],
-            speech: log[speechCol]
-        };
-        logSpeech(message);
+    initialLogs.reverse().forEach(function appendLog(log) {
+        logSpeech(log);
     });
 
     var formSubmitStream = createFormSubmitStream(form);
@@ -237,7 +228,21 @@ function getLogs() {
         request.setRequestHeader("accept", "application/json");
         request.onload = function onload() {
             if (this.status === 200) {
-                resolve(JSON.parse(this.responseText));
+                var logs = JSON.parse(this.responseText)[0];
+                var cols = ["time", "name", "speech"];
+                var colNames = cols.reduce(function makeColIndices(indices, col) {
+                    indices[logs.columns.indexOf(col)] = col;
+                    return indices;
+                }, {});
+                resolve(
+                    logs.points.map(function objectifyRecord(point) {
+                        var obj = {};
+                        for (var i in colNames) {
+                            obj[colNames[i]] = point[i];
+                        }
+                        return obj;
+                    })
+                );
             } else {
                 reject(new Error(request.statusText));
             }
