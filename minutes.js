@@ -78,9 +78,7 @@ Promise.all([
     }
 
     function displayInitialLogs(logs) {
-        logs.reverse().forEach(function appendLog(log) {
-            logSpeech(log);
-        });
+        logs.reverse().forEach(logSpeech);
     }
 
     function displayPeerId(id) {
@@ -99,9 +97,7 @@ Promise.all([
     function createSpeechStream(ws) {
         return new ReadableStream({
             start: function startSpeechStream(controller) {
-                ws.on("speech", function onSpeech(message) {
-                    controller.enqueue(message);
-                });
+                ws.on("speech", controller.enqueue.bind(controller));
             },
             error: function errorSpeechStream() {
                 controller.error(new Error("Speech stream error"));
@@ -213,12 +209,8 @@ function initPeer() {
             port: location.port,
             path: "/peers"
         });
-        peer.on("open", function peerReady(id) {
-            resolve(id);
-        });
-        peer.on("error", function onPeerError(error) {
-            reject(error);
-        });
+        peer.on("open", resolve);
+        peer.on("error", reject);
     });
 }
 
