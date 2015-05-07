@@ -32,9 +32,7 @@ Promise.all([
     langField = document.querySelector('[name="lang"]');
     messageField = form.querySelector('[name="speech"]');
 
-    initialLogs.reverse().forEach(function appendLog(log) {
-        logSpeech(log);
-    });
+    displayInitialLogs(initialLogs);
 
     var formSubmitStream = createFormSubmitStream(form);
     formSubmitStream
@@ -77,6 +75,12 @@ Promise.all([
                 clearInterval(intervalId);
             }
         };
+    }
+
+    function displayInitialLogs(logs) {
+        logs.reverse().forEach(function appendLog(log) {
+            logSpeech(log);
+        });
     }
 
     function displayPeerId(id) {
