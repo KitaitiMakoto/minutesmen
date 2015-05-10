@@ -253,8 +253,6 @@ RecognitionComponent.prototype.start = function startRecognition() {
     }).catch(function(error) {
         recog.startButton.disabled = false;
         recog.langField.disabled = false;
-        console.error(error);
-        alert(error);
     });
 };
 RecognitionComponent.prototype.stop = function stopRecognition() {
@@ -273,8 +271,6 @@ RecognitionComponent.prototype.stop = function stopRecognition() {
         }
     }).catch(function(error) {
         recog.stopButton.disabled = false;
-        console.error(error);
-        alert(error);
     });
 };
 RecognitionComponent.prototype.restart = function restartRecognition() {
@@ -285,13 +281,7 @@ RecognitionComponent.prototype.restart = function restartRecognition() {
     this._stop("restarting").then(function() {
         recog._start("restarting").then(function() {
             recog.state = "listening";
-        }).catch(function(error) {
-            console.error(error);
-            alert(error);
         });
-    }).catch(function(error) {
-        console.error(error);
-        alert(error);
     });
 };
 RecognitionComponent.prototype._start = function _startRecognition(state) {
@@ -303,6 +293,8 @@ RecognitionComponent.prototype._start = function _startRecognition(state) {
         recog.recognition.onerror = function onerror(error) {
             recog.state = prevState;
             reject(error);
+            console.error(error);
+            alert(error);
         };
         recog.recognition.start();
     });
@@ -316,6 +308,8 @@ RecognitionComponent.prototype._stop = function _stopRecognition(state) {
         recog.recognition.onerror = function onerror(error) {
             recog.state = prevState;
             reject(error);
+            console.error(error);
+            alert(error);
         };
         recog.recognition.stop();
     });
