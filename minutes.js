@@ -40,41 +40,103 @@ Promise.all([
         .pipeTo(logWriter);
 
     if (SpeechRecognition) {
-        var recognition = new SpeechRecognition();
-        recognition.interimResults = true;
-        recognition.continuous = true;
-        recognition.maxAlternatives = 1;
+        function RecognitionComponent(startButton, stopButton, langField) {
+            this.startButton = startButton;
+            this.stopButton = stopButton;
+            this.langField = langField;
+            var recog = this;
+            this.startButton.addEventListener("click", recog.start.bind(recog));
+            this.stopButton.addEventListener("click", recog.stop.bind(recog));
 
-        var speechRecognitionStream = createSpeechRecognitionStream(recognition);
-        speechRecognitionStream
+            this.state = "stopped";// stopped starting listening stopping restarting
+            this.usingTls = location.protocol === "https:";
+
+            this.recognition = new SpeechRecognition();
+            this.recognition.interimResults = true;
+            this.recognition.continuous = true;
+            this.recognition.maxAlternatives = 1;
+            this.listening = false;
+
+            this.stream = createSpeechRecognitionStream(this.recognition);
+        }
+        RecognitionComponent.prototype.start = function startRecognition() {
+            // TODO: How should do when stopping
+            if (["listening", "starting", "restarting"].indexOf(this.state) !== -1) {
+                return;
+            }
+            var recog = this;
+            var prevState = this.state;
+            this.recognition.lang = this.langField.value || "en";
+            this._start("starting").then(function() {
+                recog.state = "listening";
+                if (recog.usingTls) {
+                    recog.intervalId = setInterval(recog.restart.bind(recog), 3000);
+                }
+            }).catch(function(error) {
+                recog.state = prevState;
+                console.error(error);
+                alert(error);
+            });
+        };
+        RecognitionComponent.prototype.stop = function stopRecognition() {
+            // TODO: How should to do when starting
+            if (["stopping", "stopped"].indexOf(this.state) !== -1) {
+                return;
+            }
+            var recog = this;
+            var prevState = this.state;
+            this._stop("stopping").then(function() {
+                recog.state = "stopped";
+                clearInterval(recog.intervalId);
+            }).catch(function(error) {
+                recog.state = prevState;
+                console.error(error);
+                alert(error);
+            });
+        };
+        RecognitionComponent.prototype.restart = function restartRecognition() {
+            if (this.state === "restarting") {
+                return;
+            }
+            var recog = this;
+            var prevState = this.state;
+            this._stop("restarting").then(function() {
+                recog._start("restarting").then(function() {
+                    recog.state = "listening";
+                }).catch(function(error) {
+                    recog.state = prevState;
+                    console.error(error);
+                    alert(error);
+                });
+            }).catch(function(error) {
+                recog.state = prevState;
+                console.error(error);
+                alert(error);
+            });
+        };
+        RecognitionComponent.prototype._start = function _startRecognition(state) {
+            var recog = this;
+            return new Promise(function(resolve, reject) {
+                recog.state = state;
+                recog.recognition.onstart = resolve;
+                recog.recognition.onerror = reject;
+                recog.recognition.start();
+            });
+        };
+        RecognitionComponent.prototype._stop = function _stopRecognition(state) {
+            var recog = this;
+            return new Promise(function(resolve, reject) {
+                recog.state = state;
+                recog.recognition.onend = resolve;
+                recog.recognition.onerror = reject;
+                recog.recognition.stop();
+            });
+        };
+
+        var comp = new RecognitionComponent(document.getElementById("start-button"), document.getElementById("stop-button"), langField);
+        comp.stream
             .pipeThrough(createSpeechPoster(ws))
             .pipeTo(logWriter);
-        var intervalId, listening;
-        document.getElementById("start-button").onclick = function startRecognition() {
-            recognition.lang = langField.value || "en";
-            recognition.start();
-            listening = true;
-            // TODO: Wait for use of michrophone granted
-            if (location.protocol === "https:") {
-                recognition.onend = function() {
-                    recognition.start();
-                    listening = true;
-                }
-                intervalId = setInterval(function() {
-                    recognition.stop();
-                    listening = false;
-                }, 3000);
-            }
-        };
-        document.getElementById("stop-button").onclick = function stopRecognition() {
-            recognition.onend = null;
-            if (listening) {
-                recognition.stop();
-            }
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
-        };
     }
 
     function displayInitialLogs(logs) {
