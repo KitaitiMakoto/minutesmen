@@ -44,9 +44,8 @@ Promise.all([
             this.startButton = startButton;
             this.stopButton = stopButton;
             this.langField = langField;
-            var recog = this;
-            this.startButton.addEventListener("click", recog.start.bind(recog));
-            this.stopButton.addEventListener("click", recog.stop.bind(recog));
+            this.startButton.addEventListener("click", this.start.bind(this));
+            this.stopButton.addEventListener("click", this.stop.bind(this));
 
             this.state = "stopped";// stopped starting listening stopping restarting
             this.usingTls = location.protocol === "https:";
