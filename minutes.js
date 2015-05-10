@@ -19,18 +19,17 @@ Promise.all([
 
     displayPeerId(peerId);
 
-    var logger, iconField, nameField, langField, messageField;
     var speechStreams = createSpeechStream(ws).tee();
-    logger = document.getElementById("log");
+    var logger = document.getElementById("log");
     var logWriter = createSpeechLogger();
     var consoleSpeechLogger = createConsoleSpeechLogger();
     speechStreams[0].pipeTo(logWriter);
     speechStreams[1].pipeTo(consoleSpeechLogger);
     var form = document.querySelector("form");
-    iconField = form.querySelector('[name="icon"]');
-    nameField = form.querySelector('[name="name"]');
-    langField = document.querySelector('[name="lang"]');
-    messageField = form.querySelector('[name="speech"]');
+    var iconField = form.querySelector('[name="icon"]');
+    var nameField = form.querySelector('[name="name"]');
+    var langField = document.querySelector('[name="lang"]');
+    var messageField = form.querySelector('[name="speech"]');
 
     displayInitialLogs(initialLogs);
 
