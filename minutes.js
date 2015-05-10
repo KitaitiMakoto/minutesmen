@@ -23,22 +23,24 @@ Promise.all([
 
     var logWriter = createSpeechLogger(document.getElementById("log"));
 
-    createSpeechStream(ws)
-        .pipeTo(logWriter);
-
-    makeReadableArrayPushStream(initialLogs.reverse())
-        .pipeTo(logWriter);
-
-    createFormSubmitStream(form)
-        .pipeThrough(createSpeechPoster(ws, form))
-        .pipeTo(logWriter);
+    var readableStreams = [
+        createSpeechStream(ws),
+        makeReadableArrayPushStream(initialLogs.reverse()),
+        createFormSubmitStream(form)
+            .pipeThrough(createSpeechPoster(ws, form))
+    ]
 
     if (SpeechRecognition) {
         var comp = new RecognitionComponent(document.getElementById("start-button"), document.getElementById("stop-button"), document.querySelector('[name="lang"]'));
-        comp.stream
-            .pipeThrough(createSpeechPoster(ws, form))
-            .pipeTo(logWriter);
+        readableStreams.push(
+            comp.stream
+                .pipeThrough(createSpeechPoster(ws, form))
+        )
     }
+
+    readableStreams.forEach(function popeToLogWriter(readableStream) {
+        readableStream.pipeTo(logWriter);
+    });
 
     function displayPeerId(id) {
         document.getElementById("peer-id").value = id;
