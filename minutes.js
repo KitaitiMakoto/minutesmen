@@ -42,11 +42,6 @@ Promise.all([
     if (SpeechRecognition) {
         var comp = new RecognitionComponent(document.getElementById("start-button"), document.getElementById("stop-button"), langField);
         comp.stream
-            .pipeThrough(new TransformStream({
-                transform: function(speech, enqueue, done) {
-                    enqueue(speech);
-                }
-            }))
             .pipeThrough(createSpeechPoster(ws))
             .pipeTo(logWriter);
     }
