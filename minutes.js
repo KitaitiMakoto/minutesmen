@@ -21,7 +21,7 @@ Promise.all([
 
     var speechStream = createSpeechStream(ws);
     var logger = document.getElementById("log");
-    var logWriter = createSpeechLogger();
+    var logWriter = createSpeechLogger(logger);
     var consoleSpeechLogger = createConsoleSpeechLogger();
     speechStream.pipeTo(logWriter);
     var form = document.querySelector("form");
@@ -44,15 +44,6 @@ Promise.all([
 
     function displayPeerId(id) {
         document.getElementById("peer-id").value = id;
-    }
-
-    function logSpeech(message) {
-        var li = document.createElement("li");
-        li.textContent = "[" +
-            (new Date(Number(message.time))).toLocaleString() +
-            "]" + message.name +
-            ": " + message.speech;
-        logger.appendChild(li);
     }
 
     function createSpeechStream(ws) {
@@ -82,9 +73,16 @@ Promise.all([
         });
     }
 
-    function createSpeechLogger() {
+    function createSpeechLogger(logger) {
         return new WritableStream({
-            write: logSpeech
+            write: function logSpeech(message) {
+                var li = document.createElement("li");
+                li.textContent = "[" +
+                    (new Date(Number(message.time))).toLocaleString() +
+                    "]" + message.name +
+                    ": " + message.speech;
+                logger.appendChild(li);
+            }
         });
     }
 
