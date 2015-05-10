@@ -31,7 +31,8 @@ Promise.all([
     var langField = document.querySelector('[name="lang"]');
     var messageField = form.querySelector('[name="speech"]');
 
-    displayInitialLogs(initialLogs);
+    makeReadableArrayPushStream(initialLogs)
+        .pipeTo(logWriter);
 
     var formSubmitStream = createFormSubmitStream(form);
     formSubmitStream
@@ -194,6 +195,19 @@ function getLogs() {
         };
         request.timeout = 3000;
         request.send();
+    });
+}
+
+function makeReadableArrayPushStream(array) {
+    return new ReadableStream({
+        start: function startArrayStream(controller) {
+            array.forEach(function pushArrayItem(item) {
+                controller.enqueue(item);
+            });
+        },
+        cacnel: function cancelArrayStream() {
+            array.length = 0;
+        }
     });
 }
 
