@@ -29,8 +29,7 @@ Promise.all([
     makeReadableArrayPushStream(initialLogs.reverse())
         .pipeTo(logWriter);
 
-    var formSubmitStream = createFormSubmitStream(form);
-    formSubmitStream
+    createFormSubmitStream(form)
         .pipeThrough(createSpeechPoster(ws, form))
         .pipeTo(logWriter);
 
