@@ -43,11 +43,8 @@ Promise.all([
         var comp = new RecognitionComponent(document.getElementById("start-button"), document.getElementById("stop-button"), langField);
         comp.stream
             .pipeThrough(new TransformStream({
-                transform: function(data, enqueue, done) {
-                    enqueue({
-                        name: nameField.value,
-                        speech: data
-                    });
+                transform: function(speech, enqueue, done) {
+                    enqueue(speech);
                 }
             }))
             .pipeThrough(createSpeechPoster(ws))
@@ -86,11 +83,7 @@ Promise.all([
         return new ReadableStream({
             start: function submitSpeech(controller) {
                 form.addEventListener("submit", function submit(event) {
-                    var data = {
-                        name: nameField.value,
-                        speech: messageField.value
-                    };
-                    controller.enqueue(data);
+                    controller.enqueue(messageField.value);
                     event.preventDefault();
                 });
             }
@@ -113,7 +106,11 @@ Promise.all([
 
     // TODO: Extract message field handle
     function createSpeechPoster(ws) {
-        return new TransformStream({transform: function(data, enqueue, done) {
+        return new TransformStream({transform: function(speech, enqueue, done) {
+            var data = {
+                name: nameField.value,
+                speech: messageField.value
+            };
             ws.emit("speech", data, function onack(message) {
                 console.log("ack", message);
                 enqueue(message);
