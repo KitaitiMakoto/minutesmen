@@ -28,7 +28,7 @@ Promise.all([
     var form = document.querySelector("form");
     var langField = document.querySelector('[name="lang"]');
 
-    makeReadableArrayPushStream(initialLogs)
+    makeReadableArrayPushStream(initialLogs.reverse())
         .pipeTo(logWriter);
 
     var formSubmitStream = createFormSubmitStream(form);
