@@ -241,7 +241,6 @@ RecognitionComponent.prototype.start = function startRecognition() {
         return;
     }
     var recog = this;
-    var prevState = this.state;
     this.recognition.lang = this.langField.value || "en";
     this.startButton.disabled = true;
     this.langField.disabled = true;
@@ -252,7 +251,6 @@ RecognitionComponent.prototype.start = function startRecognition() {
             recog.intervalId = setInterval(recog.restart.bind(recog), 3000);
         }
     }).catch(function(error) {
-        recog.state = prevState;
         recog.startButton.disabled = false;
         recog.langField.disabled = false;
         console.error(error);
@@ -265,7 +263,6 @@ RecognitionComponent.prototype.stop = function stopRecognition() {
         return;
     }
     var recog = this;
-    var prevState = this.state;
     this.stopButton.disabled = true;
     this._stop("stopping").then(function() {
         recog.state = "stopped";
@@ -275,7 +272,6 @@ RecognitionComponent.prototype.stop = function stopRecognition() {
             clearInterval(recog.intervalId);
         }
     }).catch(function(error) {
-        recog.state = prevState;
         recog.stopButton.disabled = false;
         console.error(error);
         alert(error);
@@ -286,36 +282,41 @@ RecognitionComponent.prototype.restart = function restartRecognition() {
         return;
     }
     var recog = this;
-    var prevState = this.state;
     this._stop("restarting").then(function() {
         recog._start("restarting").then(function() {
             recog.state = "listening";
         }).catch(function(error) {
-            recog.state = prevState;
             console.error(error);
             alert(error);
         });
     }).catch(function(error) {
-        recog.state = prevState;
         console.error(error);
         alert(error);
     });
 };
 RecognitionComponent.prototype._start = function _startRecognition(state) {
     var recog = this;
+    var prevState = this.state;
     return new Promise(function(resolve, reject) {
         recog.state = state;
         recog.recognition.onstart = resolve;
-        recog.recognition.onerror = reject;
+        recog.recognition.onerror = function onerror(error) {
+            recog.state = prevState;
+            reject(error);
+        };
         recog.recognition.start();
     });
 };
 RecognitionComponent.prototype._stop = function _stopRecognition(state) {
     var recog = this;
+    var prevState= this.state;
     return new Promise(function(resolve, reject) {
         recog.state = state;
         recog.recognition.onend = resolve;
-        recog.recognition.onerror = reject;
+        recog.recognition.onerror = function onerror(error) {
+            recog.state = prevState;
+            reject(error);
+        };
         recog.recognition.stop();
     });
 };
