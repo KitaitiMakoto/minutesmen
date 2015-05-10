@@ -194,9 +194,14 @@ function getLogs() {
                 reject(new Error(request.statusText));
             }
         };
+        request.ontimeout = function ontimeout(error) {
+            resolve([]);
+            console.error(error);
+        };
         request.onerror = function onerror() {
             reject(new Error(request.statusText));
         };
+        request.timeout = 3000;
         request.send();
     });
 }
