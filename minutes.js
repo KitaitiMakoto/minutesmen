@@ -42,10 +42,6 @@ Promise.all([
             .pipeTo(logWriter);
     }
 
-    function displayInitialLogs(logs) {
-        logs.reverse().forEach(logSpeech);
-    }
-
     function displayPeerId(id) {
         document.getElementById("peer-id").value = id;
     }
