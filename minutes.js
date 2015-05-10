@@ -213,7 +213,6 @@ function RecognitionComponent(startButton, stopButton, langField) {
     this.recognition.interimResults = true;
     this.recognition.continuous = true;
     this.recognition.maxAlternatives = 1;
-    this.listening = false;
 
     var recognition = this.recognition;
     this.stream = new ReadableStream({
