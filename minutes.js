@@ -104,6 +104,7 @@ Promise.all([
         }});
     }
 }).catch(function(error) {
+    console.error(error);
     error.stack.split("\n").forEach(function(line) {
         console.error(line);
     });
