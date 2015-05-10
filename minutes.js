@@ -26,23 +26,20 @@ Promise.all([
     speechStreams[0].pipeTo(logWriter);
     speechStreams[1].pipeTo(consoleSpeechLogger);
     var form = document.querySelector("form");
-    var iconField = form.querySelector('[name="icon"]');
-    var nameField = form.querySelector('[name="name"]');
     var langField = document.querySelector('[name="lang"]');
-    var messageField = form.querySelector('[name="speech"]');
 
     makeReadableArrayPushStream(initialLogs)
         .pipeTo(logWriter);
 
     var formSubmitStream = createFormSubmitStream(form);
     formSubmitStream
-        .pipeThrough(createSpeechPoster(ws))
+        .pipeThrough(createSpeechPoster(ws, form))
         .pipeTo(logWriter);
 
     if (SpeechRecognition) {
         var comp = new RecognitionComponent(document.getElementById("start-button"), document.getElementById("stop-button"), langField);
         comp.stream
-            .pipeThrough(createSpeechPoster(ws))
+            .pipeThrough(createSpeechPoster(ws, form))
             .pipeTo(logWriter);
     }
 
@@ -75,6 +72,8 @@ Promise.all([
     }
 
     function createFormSubmitStream(form) {
+        var iconField = form.querySelector('[name="icon"]');
+        var messageField = form.querySelector('[name="speech"]');
         return new ReadableStream({
             start: function submitSpeech(controller) {
                 form.addEventListener("submit", function submit(event) {
@@ -100,7 +99,9 @@ Promise.all([
     }
 
     // TODO: Extract message field handle
-    function createSpeechPoster(ws) {
+    function createSpeechPoster(ws, form) {
+        var nameField = form.querySelector('[name="name"]');
+        var messageField = form.querySelector('[name="speech"]');
         return new TransformStream({transform: function(speech, enqueue, done) {
             var data = {
                 name: nameField.value,
