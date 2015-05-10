@@ -20,8 +20,7 @@ Promise.all([
     displayPeerId(peerId);
 
     var speechStream = createSpeechStream(ws);
-    var logger = document.getElementById("log");
-    var logWriter = createSpeechLogger(logger);
+    var logWriter = createSpeechLogger(document.getElementById("log"));
     speechStream
         .pipeTo(logWriter);
     var form = document.querySelector("form");
