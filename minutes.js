@@ -19,10 +19,11 @@ Promise.all([
 
     displayPeerId(peerId);
 
-    var speechStream = createSpeechStream(ws);
     var logWriter = createSpeechLogger(document.getElementById("log"));
-    speechStream
+
+    createSpeechStream(ws)
         .pipeTo(logWriter);
+
     var form = document.querySelector("form");
 
     makeReadableArrayPushStream(initialLogs.reverse())
