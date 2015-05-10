@@ -22,7 +22,8 @@ Promise.all([
     var speechStream = createSpeechStream(ws);
     var logger = document.getElementById("log");
     var logWriter = createSpeechLogger(logger);
-    speechStream.pipeTo(logWriter);
+    speechStream
+        .pipeTo(logWriter);
     var form = document.querySelector("form");
     var langField = document.querySelector('[name="lang"]');
 
