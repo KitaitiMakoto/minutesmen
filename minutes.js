@@ -40,109 +40,16 @@ Promise.all([
         .pipeTo(logWriter);
 
     if (SpeechRecognition) {
-        function RecognitionComponent(startButton, stopButton, langField) {
-            this.startButton = startButton;
-            this.stopButton = stopButton;
-            this.langField = langField;
-            this.startButton.addEventListener("click", this.start.bind(this));
-            this.stopButton.addEventListener("click", this.stop.bind(this));
-
-            this.state = "stopped";// stopped starting listening stopping restarting
-            this.usingTls = location.protocol === "https:";
-
-            this.recognition = new SpeechRecognition();
-            this.recognition.interimResults = true;
-            this.recognition.continuous = true;
-            this.recognition.maxAlternatives = 1;
-            this.listening = false;
-
-            this.stream = createSpeechRecognitionStream(this.recognition);
-        }
-        RecognitionComponent.prototype.start = function startRecognition() {
-            // TODO: How should do when stopping
-            if (["listening", "starting", "restarting"].indexOf(this.state) !== -1) {
-                return;
-            }
-            var recog = this;
-            var prevState = this.state;
-            this.recognition.lang = this.langField.value || "en";
-            this.startButton.disabled = true;
-            this.langField.disabled = true;
-            this._start("starting").then(function() {
-                recog.state = "listening";
-                recog.stopButton.disabled = false;
-                if (recog.usingTls) {
-                    recog.intervalId = setInterval(recog.restart.bind(recog), 3000);
-                }
-            }).catch(function(error) {
-                recog.state = prevState;
-                recog.startButton.disabled = false;
-                recog.langField.disabled = false;
-                console.error(error);
-                alert(error);
-            });
-        };
-        RecognitionComponent.prototype.stop = function stopRecognition() {
-            // TODO: How should to do when starting
-            if (["stopping", "stopped"].indexOf(this.state) !== -1) {
-                return;
-            }
-            var recog = this;
-            var prevState = this.state;
-            this.stopButton.disabled = true;
-            this._stop("stopping").then(function() {
-                recog.state = "stopped";
-                recog.startButton.disabled = false;
-                recog.langField.disabled = false;
-                clearInterval(recog.intervalId);
-            }).catch(function(error) {
-                recog.state = prevState;
-                recog.stopButton.disabled = false;
-                console.error(error);
-                alert(error);
-            });
-        };
-        RecognitionComponent.prototype.restart = function restartRecognition() {
-            if (this.state === "restarting") {
-                return;
-            }
-            var recog = this;
-            var prevState = this.state;
-            this._stop("restarting").then(function() {
-                recog._start("restarting").then(function() {
-                    recog.state = "listening";
-                }).catch(function(error) {
-                    recog.state = prevState;
-                    console.error(error);
-                    alert(error);
-                });
-            }).catch(function(error) {
-                recog.state = prevState;
-                console.error(error);
-                alert(error);
-            });
-        };
-        RecognitionComponent.prototype._start = function _startRecognition(state) {
-            var recog = this;
-            return new Promise(function(resolve, reject) {
-                recog.state = state;
-                recog.recognition.onstart = resolve;
-                recog.recognition.onerror = reject;
-                recog.recognition.start();
-            });
-        };
-        RecognitionComponent.prototype._stop = function _stopRecognition(state) {
-            var recog = this;
-            return new Promise(function(resolve, reject) {
-                recog.state = state;
-                recog.recognition.onend = resolve;
-                recog.recognition.onerror = reject;
-                recog.recognition.stop();
-            });
-        };
-
         var comp = new RecognitionComponent(document.getElementById("start-button"), document.getElementById("stop-button"), langField);
         comp.stream
+            .pipeThrough(new TransformStream({
+                transform: function(data, enqueue, done) {
+                    enqueue({
+                        name: nameField.value,
+                        speech: data
+                    });
+                }
+            }))
             .pipeThrough(createSpeechPoster(ws))
             .pipeTo(logWriter);
     }
@@ -186,31 +93,6 @@ Promise.all([
                     controller.enqueue(data);
                     event.preventDefault();
                 });
-            }
-        });
-    }
-
-    function createSpeechRecognitionStream(recognition) {
-        return new ReadableStream({
-            start: function startSpeechRecognition(controller) {
-                recognition.onresult = function postSpeech(event) {
-                    var results = event.results;
-                    var i = event.resultIndex, l = results.length, result;
-                    for (; i < l; i++) {
-                        result = results[i];
-                        var alt = result.item(0);
-                        if (result.isFinal && alt.confidence > 0.3) {
-                            var data = {
-                                name: nameField.value,
-                                speech: alt.transcript
-                            }
-                            controller.enqueue(data);
-                        }
-                    }
-                };
-            },
-            cancel: function cancelSpeechRecognition(reason) {
-                recognition.stop();
             }
         });
     }
@@ -316,3 +198,122 @@ function getLogs() {
         request.send();
     });
 }
+
+function RecognitionComponent(startButton, stopButton, langField) {
+    this.startButton = startButton;
+    this.stopButton = stopButton;
+    this.langField = langField;
+    this.startButton.addEventListener("click", this.start.bind(this));
+    this.stopButton.addEventListener("click", this.stop.bind(this));
+
+    this.state = "stopped";// stopped starting listening stopping restarting
+    this.usingTls = location.protocol === "https:";
+
+    this.recognition = new SpeechRecognition();
+    this.recognition.interimResults = true;
+    this.recognition.continuous = true;
+    this.recognition.maxAlternatives = 1;
+    this.listening = false;
+
+    var recognition = this.recognition;
+    this.stream = new ReadableStream({
+        start: function startSpeechRecognition(controller) {
+            recognition.onresult = function postSpeech(event) {
+                var results = event.results;
+                var i = event.resultIndex, l = results.length, result;
+                for (; i < l; i++) {
+                    result = results[i];
+                    var alt = result.item(0);
+                    if (result.isFinal && alt.confidence > 0.3) {
+                        controller.enqueue(alt.transcript);
+                    }
+                }
+            };
+        },
+        cancel: function cancelSpeechRecognition(reason) {
+            recognition.stop();
+        }
+    });
+}
+RecognitionComponent.prototype.start = function startRecognition() {
+    // TODO: How should do when stopping
+    if (["listening", "starting", "restarting"].indexOf(this.state) !== -1) {
+        return;
+    }
+    var recog = this;
+    var prevState = this.state;
+    this.recognition.lang = this.langField.value || "en";
+    this.startButton.disabled = true;
+    this.langField.disabled = true;
+    this._start("starting").then(function() {
+        recog.state = "listening";
+        recog.stopButton.disabled = false;
+        if (recog.usingTls) {
+            recog.intervalId = setInterval(recog.restart.bind(recog), 3000);
+        }
+    }).catch(function(error) {
+        recog.state = prevState;
+        recog.startButton.disabled = false;
+        recog.langField.disabled = false;
+        console.error(error);
+        alert(error);
+    });
+};
+RecognitionComponent.prototype.stop = function stopRecognition() {
+    // TODO: How should to do when starting
+    if (["stopping", "stopped"].indexOf(this.state) !== -1) {
+        return;
+    }
+    var recog = this;
+    var prevState = this.state;
+    this.stopButton.disabled = true;
+    this._stop("stopping").then(function() {
+        recog.state = "stopped";
+        recog.startButton.disabled = false;
+        recog.langField.disabled = false;
+        clearInterval(recog.intervalId);
+    }).catch(function(error) {
+        recog.state = prevState;
+        recog.stopButton.disabled = false;
+        console.error(error);
+        alert(error);
+    });
+};
+RecognitionComponent.prototype.restart = function restartRecognition() {
+    if (this.state === "restarting") {
+        return;
+    }
+    var recog = this;
+    var prevState = this.state;
+    this._stop("restarting").then(function() {
+        recog._start("restarting").then(function() {
+            recog.state = "listening";
+        }).catch(function(error) {
+            recog.state = prevState;
+            console.error(error);
+            alert(error);
+        });
+    }).catch(function(error) {
+        recog.state = prevState;
+        console.error(error);
+        alert(error);
+    });
+};
+RecognitionComponent.prototype._start = function _startRecognition(state) {
+    var recog = this;
+    return new Promise(function(resolve, reject) {
+        recog.state = state;
+        recog.recognition.onstart = resolve;
+        recog.recognition.onerror = reject;
+        recog.recognition.start();
+    });
+};
+RecognitionComponent.prototype._stop = function _stopRecognition(state) {
+    var recog = this;
+    return new Promise(function(resolve, reject) {
+        recog.state = state;
+        recog.recognition.onend = resolve;
+        recog.recognition.onerror = reject;
+        recog.recognition.stop();
+    });
+};
