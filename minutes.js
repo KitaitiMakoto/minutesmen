@@ -285,32 +285,23 @@ RecognitionComponent.prototype.restart = function restartRecognition() {
     });
 };
 RecognitionComponent.prototype._start = function _startRecognition(state) {
+    return this._call(state, "start", "onstart");
+};
+RecognitionComponent.prototype._stop = function _stopRecognition(state) {
+    return this._call(state, "stop", "onend");
+};
+RecognitionComponent.prototype._call = function _callRecognitionFunction(state, funcName, callbackFuncName) {
     var recog = this;
     var prevState = this.state;
     return new Promise(function(resolve, reject) {
         recog.state = state;
-        recog.recognition.onstart = resolve;
+        recog.recognition[callbackFuncName] = resolve;
         recog.recognition.onerror = function onerror(error) {
             recog.state = prevState;
             reject(error);
             console.error(error);
             alert(error);
         };
-        recog.recognition.start();
-    });
-};
-RecognitionComponent.prototype._stop = function _stopRecognition(state) {
-    var recog = this;
-    var prevState= this.state;
-    return new Promise(function(resolve, reject) {
-        recog.state = state;
-        recog.recognition.onend = resolve;
-        recog.recognition.onerror = function onerror(error) {
-            recog.state = prevState;
-            reject(error);
-            console.error(error);
-            alert(error);
-        };
-        recog.recognition.stop();
+        recog.recognition[funcName]();
     });
 };
