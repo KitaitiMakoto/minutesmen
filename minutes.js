@@ -67,13 +67,18 @@ Promise.all([
             var recog = this;
             var prevState = this.state;
             this.recognition.lang = this.langField.value || "en";
+            this.startButton.disabled = true;
+            this.langField.disabled = true;
             this._start("starting").then(function() {
                 recog.state = "listening";
+                recog.stopButton.disabled = false;
                 if (recog.usingTls) {
                     recog.intervalId = setInterval(recog.restart.bind(recog), 3000);
                 }
             }).catch(function(error) {
                 recog.state = prevState;
+                recog.startButton.disabled = false;
+                recog.langField.disabled = false;
                 console.error(error);
                 alert(error);
             });
@@ -85,11 +90,15 @@ Promise.all([
             }
             var recog = this;
             var prevState = this.state;
+            this.stopButton.disabled = true;
             this._stop("stopping").then(function() {
                 recog.state = "stopped";
+                recog.startButton.disabled = false;
+                recog.langField.disabled = false;
                 clearInterval(recog.intervalId);
             }).catch(function(error) {
                 recog.state = prevState;
+                recog.stopButton.disabled = false;
                 console.error(error);
                 alert(error);
             });
