@@ -271,7 +271,9 @@ RecognitionComponent.prototype.stop = function stopRecognition() {
         recog.state = "stopped";
         recog.startButton.disabled = false;
         recog.langField.disabled = false;
-        clearInterval(recog.intervalId);
+        if (recog.intervalId) {
+            clearInterval(recog.intervalId);
+        }
     }).catch(function(error) {
         recog.state = prevState;
         recog.stopButton.disabled = false;
