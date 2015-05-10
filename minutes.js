@@ -19,12 +19,11 @@ Promise.all([
 
     displayPeerId(peerId);
 
-    var speechStreams = createSpeechStream(ws).tee();
+    var speechStream = createSpeechStream(ws);
     var logger = document.getElementById("log");
     var logWriter = createSpeechLogger();
     var consoleSpeechLogger = createConsoleSpeechLogger();
-    speechStreams[0].pipeTo(logWriter);
-    speechStreams[1].pipeTo(consoleSpeechLogger);
+    speechStream.pipeTo(logWriter);
     var form = document.querySelector("form");
     var langField = document.querySelector('[name="lang"]');
 
@@ -63,7 +62,10 @@ Promise.all([
     function createSpeechStream(ws) {
         return new ReadableStream({
             start: function startSpeechStream(controller) {
-                ws.on("speech", controller.enqueue.bind(controller));
+                ws.on("speech", function(message) {
+                    console.log("speech", message);
+                    controller.enqueue(message);
+                });
             },
             error: function errorSpeechStream() {
                 controller.error(new Error("Speech stream error"));
