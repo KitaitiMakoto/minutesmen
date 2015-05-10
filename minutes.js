@@ -93,7 +93,7 @@ Promise.all([
         return new TransformStream({transform: function(speech, enqueue, done) {
             var data = {
                 name: nameField.value,
-                speech: messageField.value
+                speech: speech
             };
             ws.emit("speech", data, function onack(message) {
                 console.log("ack", message);
