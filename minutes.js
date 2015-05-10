@@ -22,7 +22,6 @@ Promise.all([
     var speechStream = createSpeechStream(ws);
     var logger = document.getElementById("log");
     var logWriter = createSpeechLogger(logger);
-    var consoleSpeechLogger = createConsoleSpeechLogger();
     speechStream.pipeTo(logWriter);
     var form = document.querySelector("form");
     var langField = document.querySelector('[name="lang"]');
@@ -82,14 +81,6 @@ Promise.all([
                     "]" + message.name +
                     ": " + message.speech;
                 logger.appendChild(li);
-            }
-        });
-    }
-
-    function createConsoleSpeechLogger() {
-        return new WritableStream({
-            write: function logSpeech(message) {
-                console.log("speech", message);
             }
         });
     }
