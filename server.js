@@ -17,7 +17,7 @@ var peer = require("peer").ExpressPeerServer;
 
 db.getSeriesNames("minutesmen", function(error, seriesNames) {
     if (error) {
-        console.warn("[WARN]InfluxDB seems not running");
+        throw error;
     }
 });
 
