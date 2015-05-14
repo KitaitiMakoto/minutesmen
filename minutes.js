@@ -210,6 +210,7 @@ function RecognitionComponent(startButton, stopButton, langField) {
 
     this.state = "stopped";// stopped starting listening stopping restarting
     this.usingTls = location.protocol === "https:";
+    this.lang = this.langField.value || "en";
 
     this.recognition = new SpeechRecognition();
     this.recognition.interimResults = true;
@@ -242,7 +243,7 @@ RecognitionComponent.prototype.start = function startRecognition() {
         return;
     }
     var recog = this;
-    this.recognition.lang = this.langField.value || "en";
+    this.recognition.lang = this.lang;
     this.startButton.disabled = true;
     this.langField.disabled = true;
     this._start("starting").then(function() {
