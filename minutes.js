@@ -249,7 +249,9 @@ RecognitionComponent.prototype.start = function startRecognition() {
     var recog = this;
     this.recognition.lang = this.lang;
     this.startButton.disabled = true;
-    this.langField.disabled = true;
+    if (! this.usingTls) {
+        this.langField.disabled = true;
+    }
     this._start("starting").then(function() {
         recog.state = "listening";
         recog.stopButton.disabled = false;
@@ -258,7 +260,9 @@ RecognitionComponent.prototype.start = function startRecognition() {
         }
     }).catch(function(error) {
         recog.startButton.disabled = false;
-        recog.langField.disabled = false;
+        if (! recog.usingTls) {
+            recog.langField.disabled = false;
+        }
     });
 };
 RecognitionComponent.prototype.stop = function stopRecognition() {
@@ -271,7 +275,9 @@ RecognitionComponent.prototype.stop = function stopRecognition() {
     this._stop("stopping").then(function() {
         recog.state = "stopped";
         recog.startButton.disabled = false;
-        recog.langField.disabled = false;
+        if (! recog.usingTls) {
+            recog.langField.disabled = false;
+        }
         if (recog.intervalId) {
             clearInterval(recog.intervalId);
         }
