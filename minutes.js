@@ -25,20 +25,17 @@ Promise.all([
     var speechPoster = createSpeechPoster(ws, form);
     createFormSubmitStream(form)
         .pipeTo(speechPoster.writable);
-
-    var readableStreams = [
-        createSpeechStream(ws),
-        makeReadableArrayPushStream(initialLogs.reverse()),
-        speechPoster.readable
-    ]
-
     if (SpeechRecognition) {
         var comp = new RecognitionComponent(document.getElementById("start-button"), document.getElementById("stop-button"), document.querySelector('[name="lang"]'));
         comp.stream
             .pipeTo(speechPoster.writable);
     }
 
-    readableStreams.forEach(function popeToLogWriter(readableStream) {
+    [
+        createSpeechStream(ws),
+        makeReadableArrayPushStream(initialLogs.reverse()),
+        speechPoster.readable
+    ].forEach(function popeToLogWriter(readableStream) {
         readableStream.pipeTo(logWriter);
     });
 
