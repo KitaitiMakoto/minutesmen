@@ -22,20 +22,20 @@ Promise.all([
     var form = document.querySelector("form");
 
     var logWriter = createSpeechLogger(document.getElementById("log"));
+    var speechPoster = createSpeechPoster(ws, form);
+    createFormSubmitStream(form)
+        .pipeTo(speechPoster.writable);
 
     var readableStreams = [
         createSpeechStream(ws),
         makeReadableArrayPushStream(initialLogs.reverse()),
-        createFormSubmitStream(form)
-            .pipeThrough(createSpeechPoster(ws, form))
+        speechPoster.readable
     ]
 
     if (SpeechRecognition) {
         var comp = new RecognitionComponent(document.getElementById("start-button"), document.getElementById("stop-button"), document.querySelector('[name="lang"]'));
-        readableStreams.push(
-            comp.stream
-                .pipeThrough(createSpeechPoster(ws, form))
-        )
+        comp.stream
+            .pipeTo(speechPoster.writable);
     }
 
     readableStreams.forEach(function popeToLogWriter(readableStream) {
