@@ -1,0 +1,24 @@
+{
+  "name": "minutesmen",
+  "version": "0.0.0",
+  "authors": [
+    "KITAITI Makoto <KitaitiMakoto@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "polymer": "Polymer/polymer#~1.0.6"
+  },
+  "dependencies": {
+    "iron-elements": "PolymerElements/iron-elements#~1.0.2",
+    "paper-elements": "PolymerElements/paper-elements#~1.0.1",
+    "platinum-elements": "PolymerElements/platinum-elements#~1.0.1",
+    "neon-elements": "PolymerElements/neon-elements#~1.0.0"
+  }
+}
