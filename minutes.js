@@ -74,6 +74,7 @@ Promise.all([
         return new WritableStream({
             write: function logSpeech(message) {
                 var li = document.createElement("li");
+                li = document.createElement("paper-item");
                 li.textContent = "[" +
                     (new Date(Number(message.time))).toLocaleString() +
                     "]" + message.name +

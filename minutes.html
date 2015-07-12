@@ -1,21 +1,61 @@
 <!doctype html>
 <title>Minutesmen</title>
 <link href="minutes.css" rel="stylesheet">
-<h1>Minutesmen</h1>
+<script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+<link href="bower_components/paper-header-panel/paper-header-panel.html" rel="import">
+<link href="bower_components/paper-input/paper-input.html" rel="import">
+<link href="bower_components/paper-button/paper-button.html" rel="import">
+<link href="bower_components/paper-item/paper-item.html" rel="import">
+<style is="custom-style">
+  :root {
+    /* https://www.google.com/design/spec/style/color.html#color-color-palette */
+    --paper-color-teal-50: #E0F2F1;
+    --paper-color-teal-100: #B2DFDB;
+    --paper-color-teal-200: #80CBC4;
+    --paper-color-teal-300: #4DB6AC;
+    --paper-color-teal-400: #26A69A;
+    --paper-color-teal-500: #009688;
+    --paper-color-teal-600: #00897B;
+    --paper-color-teal-700: #00796B;
+    --paper-color-teal-800: #00695C;
+    --paper-color-teal-900: #004D40;
+    --paper-color-teal-A100: #A7FFEB;
+    --paper-color-teal-A200: #64FFDA;
+    --paper-color-teal-A400: #1DE9B6;
+    --paper-color-teal-A700: #00BFA5;
+
+    --paper-color-teal: var(--paper-color-teal-500);
+
+    --default-primary-color: var(--paper-color-teal);
+
+  }
+  paper-header-panel {
+    color: white;
+    background-color: var(--default-primary-color);
+  }
+  paper-input {
+    --paper-input-container-input-color: var(--paper-color-teal-900);
+  }
+</style>
+<paper-header-panel>
+  <paper-toolbar>
+    <h1>Minutesmen</h1>
+  </paper-toolbar>
+</paper-header-panel>
 <div id="controls">
   <div id="rtc">
-    <p><label>Peer ID: <input id="peer-id" readonly value="(loading...)"></label></p>
+    <p><paper-input label="Peer ID" id="peer-id" readonly value="(loading...)"><paper-input></p>
   </div>
   <form>
     <p><label>Icon: <input name="icon" type="file" accept="image/*"></label></p>
-    <p><label>Name: <input name="name"></label></p>
-    <p><label>Speech(dev purpose): <input name="speech"></label></p>
+    <p><paper-input label="Name" name="name"></paper-input></label></p>
+<p><paper-input name="speech" label="Speech(dev purpose)"></paper-input></p>
     <p><input type="submit"></p>
   </form>
   <div id="recognition">
     <p><label>Language: <select name="lang"><option value="en">en</option><option value="ja">ja</option></select></label></p>
-    <button id="start-button" type="button">Start</button>
-    <button id="stop-button" type="button" disabled>Stop</button>
+    <button id="start-button">Start</button>
+    <button id="stop-button">Stop</button>
   </div>
 </div>
 <ol id="log"></ol>
