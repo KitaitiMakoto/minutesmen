@@ -1,3 +1,7 @@
+button[disabled] {
+    /* normalize.css resets color so we need restore it */
+    color: graytext;
+}
 #controls {
     float: right;
     border: thin black solid;
