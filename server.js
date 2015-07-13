@@ -17,7 +17,7 @@ var peer = require("peer").ExpressPeerServer;
 
 db.getSeriesNames("minutesmen", function(error, seriesNames) {
     if (error) {
-        throw error;
+//        throw error;
     }
 });
 

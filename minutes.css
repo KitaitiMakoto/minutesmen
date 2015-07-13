@@ -2,6 +2,11 @@ button[disabled] {
     /* normalize.css resets color so we need restore it */
     color: graytext;
 }
+#rtc paper-spinner {
+    float: left;
+    left: 4em;
+    top: 1em
+}
 #controls {
     float: right;
     border: thin black solid;

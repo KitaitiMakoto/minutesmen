@@ -3,10 +3,13 @@
 <link href="node_modules/normalize.css/normalize.css" rel="stylesheet">
 <link href="minutes.css" rel="stylesheet">
 <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+<script>Polymer.dom = "shadow";</script>
 <link href="bower_components/paper-header-panel/paper-header-panel.html" rel="import">
 <link href="bower_components/paper-input/paper-input.html" rel="import">
 <link href="bower_components/paper-button/paper-button.html" rel="import">
 <link href="bower_components/paper-item/paper-item.html" rel="import">
+<link href="bower_components/paper-spinner/paper-spinner.html" rel="import">
+<link href="elements.html" rel="import">
 <style is="custom-style">
   :root {
     /* https://www.google.com/design/spec/style/color.html#color-color-palette */
@@ -20,6 +23,10 @@
   paper-input {
     --paper-input-container-input-color: var(--paper-teal-900);
   }
+  paper-button {
+    color: white;
+    background-color: var(--default-primary-color);
+  }
 </style>
 <paper-header-panel>
   <paper-toolbar>
@@ -28,18 +35,17 @@
 </paper-header-panel>
 <div id="controls">
   <div id="rtc">
-    <p><paper-input label="Peer ID" id="peer-id" readonly value="(loading...)"><paper-input></p>
+    <p><paper-spinner alt="Connecting to Web RTC signaling server..." active></paper-spinner><paper-input label="Peer ID" id="peer-id" readonly><paper-input></p>
   </div>
   <form>
-    <p><label>Icon: <input name="icon" type="file" accept="image/*"></label></p>
     <p><paper-input label="Name" name="name"></paper-input></label></p>
-<p><paper-input name="speech" label="Speech(dev purpose)"></paper-input></p>
-    <p><input type="submit"></p>
+    <p><paper-input name="speech" label="Speech(dev purpose)"></paper-input></p>
+    <p><paper-button name="post" raised>Post</paper-button></p>
   </form>
   <div id="recognition">
     <p><label>Language: <select name="lang"><option value="en">en</option><option value="ja">ja</option></select></label></p>
     <button id="start-button">Start</button>
-    <button id="stop-button">Stop</button>
+    <button id="stop-button" disabled>Stop</button>
   </div>
 </div>
 <ol id="log"></ol>

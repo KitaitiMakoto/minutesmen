@@ -40,6 +40,8 @@ Promise.all([
     });
 
     function displayPeerId(id) {
+        var spinner = document.querySelector("#rtc paper-spinner")
+        spinner.active = false;
         document.getElementById("peer-id").value = id;
     }
 
@@ -63,6 +65,7 @@ Promise.all([
         return new ReadableStream({
             start: function submitSpeech(controller) {
                 form.addEventListener("submit", function submit(event) {
+console.log(event);
                     controller.enqueue(messageField.value);
                     event.preventDefault();
                 });
