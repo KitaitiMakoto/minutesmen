@@ -21,6 +21,11 @@ Promise.all([
 
     var form = document.querySelector("form");
 
+    React.render(
+        React.createElement(RecognitionControls),
+        document.getElementById("recognition")
+    );
+
     var logWriter = createSpeechLogger(document.getElementById("log"));
     var speechPoster = createSpeechPoster(ws, form);
     createFormSubmitStream(form)
