@@ -3,8 +3,8 @@
   "scripts": {
     "start": "npm run build && npm run server",
     "server": "node server.js",
-    "build": "browserify -t babelify streams.src.js > streams.js; jsx src .",
-    "watch": "jsx --watch src ."
+    "build": "browserify -t babelify streams.src.js > streams.js; jsx --harmony src .",
+    "watch": "jsx --watch --harmony src ."
   },
   "dependencies": {
     "express": "^4.12.3",
