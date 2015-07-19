@@ -151,10 +151,10 @@ function getLogs() {
     return new Promise(function getLogs(resolve, reject) {
         var request = new XMLHttpRequest();
         request.open("GET", "/logs");
-        request.setRequestHeader("accept", "application/json");
+        request.responseType = "json"
         request.onload = function onload() {
             if (this.status === 200) {
-                var logs = JSON.parse(this.responseText);
+                var logs = this.response;
                 var cols = ["time", "name", "speech"];
                 var colNames = cols.reduce(function makeColIndices(indices, col) {
                     indices[logs.columns.indexOf(col)] = col;
