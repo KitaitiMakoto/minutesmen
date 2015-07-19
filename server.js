@@ -27,7 +27,7 @@ function getRecentLogs() {
             if (error) {
                 reject(new Error(error));
             } else {
-                resolve(logs);
+                resolve(logs[0]);
             }
         });
     });

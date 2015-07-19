@@ -154,7 +154,7 @@ function getLogs() {
         request.setRequestHeader("accept", "application/json");
         request.onload = function onload() {
             if (this.status === 200) {
-                var logs = JSON.parse(this.responseText)[0];
+                var logs = JSON.parse(this.responseText);
                 var cols = ["time", "name", "speech"];
                 var colNames = cols.reduce(function makeColIndices(indices, col) {
                     indices[logs.columns.indexOf(col)] = col;
